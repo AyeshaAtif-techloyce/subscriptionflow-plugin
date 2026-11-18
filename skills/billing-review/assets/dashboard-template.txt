@@ -1,6 +1,5 @@
 <title>Billing Review</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: KPI strip, then aging + MRR side by side, then the action table with failed payments and renewals beside it. */
 :root{
