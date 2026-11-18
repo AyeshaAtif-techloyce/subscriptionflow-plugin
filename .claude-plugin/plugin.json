@@ -1,5 +1,6 @@
 {
   "name": "subscriptionflow",
+  "displayName": "SubscriptionFlow",
   "version": "1.0.0",
   "description": "SubscriptionFlow for Claude: connects the SubscriptionFlow MCP connector and adds skills for billing review, customer 360, data health checks and guided account setup.",
   "author": {
@@ -15,5 +16,7 @@
     "reporting",
     "mrr"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": "https://github.com/AyeshaAtif-techloyce/subscriptionflow-plugin",
+  "documentationUrl": "https://support.subscriptionflow.com/hc/en-us"
 }
