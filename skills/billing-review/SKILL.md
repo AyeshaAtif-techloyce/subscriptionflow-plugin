@@ -48,7 +48,7 @@ For each Critical or Overdue invoice, attach one **proposed action** from the ru
 
 ## 3. Build the dashboard
 
-1. Read `assets/dashboard.html`.
+1. Read `assets/dashboard-template.txt`. It is the HTML page for the dashboard, saved as a text file.
 2. Build one JSON object matching the **data contract** below.
 3. Replace the line `const DATA = window.__SF_DATA__ || SAMPLE;` with `const DATA = <your JSON>;`. Leave everything else in the file as it is.
 4. Show it as an interactive HTML view where the client supports it (for example an artifact or canvas). Title it "Billing review – <today's date>".

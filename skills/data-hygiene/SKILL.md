@@ -23,7 +23,7 @@ Examples carry customer ids. Look up names once for all of them: `staff_list_rec
 
 ## 3. Build the report
 
-1. Read `assets/data-hygiene.html`.
+1. Read `assets/data-hygiene-template.txt`. It is the HTML page for the report, saved as a text file.
 2. Build one JSON object matching the contract below, checks ordered high → medium → low, then clear, then unavailable.
 3. Replace the line `const DATA = window.__SF_DATA__ || SAMPLE;` with `const DATA = <your JSON>;` and change nothing else.
 4. Show it as an interactive HTML view where the client supports it (for example an artifact or canvas), titled "Data health – <today's date>".

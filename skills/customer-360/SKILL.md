@@ -44,7 +44,7 @@ Write 2–5 short signals, most serious first. Look for:
 
 ## 5. Build the card
 
-1. Read `assets/customer-360.html`.
+1. Read `assets/customer-360-template.txt`. It is the HTML page for the card, saved as a text file.
 2. Build one JSON object matching the data contract below.
 3. Replace the line `const DATA = window.__SF_DATA__ || SAMPLE;` with `const DATA = <your JSON>;` and change nothing else.
 4. Show it as an interactive HTML view where the client supports it (for example an artifact or canvas), titled "<Company> – customer review".
