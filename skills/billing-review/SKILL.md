@@ -22,7 +22,7 @@ Call these SubscriptionFlow tools. Run independent calls in parallel. If a call 
 | Customer names | `staff_list_records` on `customers`, filter `id` `$in` [the customer ids from the invoices], select `id`, `name` |
 | Saved payment methods | `staff_list_records` on `payment-methods`, filter `parent_id` `$in` [same ids] (payment methods link to customers through `parent_id`, not `customer_id`) |
 | Who owes the most | `staff_run_report` with `report: "invoice-aging"` if listed (note: its buckets run from invoice date) |
-| MRR and churn (last 6 months) | `staff_run_report` with `report: "mrr"` and `report: "churned-mrr"`, `currency` set (pass `start`/`end`) |
+| MRR and churn (last 6 months) | `staff_run_report` with `report: "mrr"` and `report: "churned-mrr"`, `currency` set (set `start` and `end`) |
 | Failed payments (last 7 days) | `staff_list_records` on `transactions`, filter `status` `$in` `["Failed","Declined"]`, `date` `$gte` 7 days ago |
 | Renewals (next 30 days) | `staff_list_records` on `subscriptions`, filter `status` `$equals` `"Active"`, `next_bill_date` `$gte` today and `$lte` today + 30 days |
 

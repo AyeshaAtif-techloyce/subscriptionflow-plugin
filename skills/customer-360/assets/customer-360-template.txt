@@ -76,30 +76,30 @@ h1{font-size:1.6rem;font-weight:800;margin:0;letter-spacing:-.01em;text-wrap:bal
 <script>
 const SAMPLE = {
   generated_at:"2026-10-20",
-  customer:{company:"Copperfield Logistics",name:"PERF Ivan Pearson",number:"PERF-C000003",email:"ivan.pearson.000003@perf.seed",city:"London",country:"GB",terms:"Net30",currency:"USD",since:"2026-03-21",auto_charge:true,portal:true,payment_methods:0},
-  health:{score:20,band:"at_risk",reasons:["-30 invoice over 60 days late","-15 auto-charge on with no saved payment method","-20 two subscriptions stopped in the last 30 days","-10 Draft subscription past its bill date","-5 no contacts on file"]},
-  kpis:{open_balance:9562.46,open_count:5,overdue:9078.58,overdue_count:4,oldest_days:110,active_subs:1,total_subs:4,paid_to_date:5243},
+  customer:{company:"Copperfield Logistics", name:"PERF Ivan Pearson", number:"PERF-C000003", email:"ivan.pearson.000003@perf.seed", city:"London", country:"GB", terms:"Net30", currency:"USD", since:"2026-03-21", auto_charge:true, portal:true, payment_methods:0},
+  health:{score:20, band:"at_risk", reasons:["-30 invoice over 60 days late", "-15 auto-charge on with no saved payment method", "-20 two subscriptions stopped in the last 30 days", "-10 Draft subscription past its bill date", "-5 no contacts on file"]},
+  kpis:{open_balance:9562.46, open_count:5, overdue:9078.58, overdue_count:4, oldest_days:110, active_subs:1, total_subs:4, paid_to_date:5243},
   subscriptions:[
-    {number:"PERF-SF_000044",name:"Onboarding Services · Basic Quarterly",status:"Active",amount:995,detail:"Next bill 8 Nov 2026 · term ends 8 Apr 2027"},
-    {number:"PERF-SF_000097",name:"Support Package · Basic Quarterly",status:"Draft",amount:8994,detail:"Next bill date 17 Oct 2026 has passed"},
-    {number:"PERF-SF_000075",name:"Data Warehouse · Starter Monthly",status:"Suspended",amount:297,detail:"Suspended 12 Oct 2026"},
-    {number:"PERF-SF_000086",name:"Support Package · Pro Annual",status:"Cancelled",amount:798,detail:"Cancelled 12 Oct 2026, no reason recorded"}],
+    {number:"PERF-SF_000044", name:"Onboarding Services · Basic Quarterly", status:"Active", amount:995, detail:"Next bill 8 Nov 2026 · term ends 8 Apr 2027"},
+    {number:"PERF-SF_000097", name:"Support Package · Basic Quarterly", status:"Draft", amount:8994, detail:"Next bill date 17 Oct 2026 has passed"},
+    {number:"PERF-SF_000075", name:"Data Warehouse · Starter Monthly", status:"Suspended", amount:297, detail:"Suspended 12 Oct 2026"},
+    {number:"PERF-SF_000086", name:"Support Package · Pro Annual", status:"Cancelled", amount:798, detail:"Cancelled 12 Oct 2026, no reason recorded"}],
   invoices:[
-    {number:"PERF-IN-000014",status:"Due",amount_due:831.6,due_date:"2026-07-02",days_late:110,note:"Status still says Due"},
-    {number:"PERF-IN-000081",status:"Overdue",amount_due:273,due_date:"2026-07-16",days_late:96,note:""},
-    {number:"PERF-IN-000017",status:"Due",amount_due:894,due_date:"2026-08-15",days_late:66,note:"Status still says Due"},
-    {number:"PERF-IN-000033",status:"Due",amount_due:7079.98,due_date:"2026-10-09",days_late:11,note:"Status still says Due"},
-    {number:"PERF-IN-000065",status:"Due",amount_due:483.88,due_date:"2026-12-31",days_late:-72,note:""},
-    {number:"PERF-IN-000055",status:"Paid",amount_due:0,due_date:"2026-03-28",days_late:null,note:"Paid $5,243.00"}],
+    {number:"PERF-IN-000014", status:"Due", amount_due:831.6, due_date:"2026-07-02", days_late:110, note:"Status still says Due"},
+    {number:"PERF-IN-000081", status:"Overdue", amount_due:273, due_date:"2026-07-16", days_late:96, note:""},
+    {number:"PERF-IN-000017", status:"Due", amount_due:894, due_date:"2026-08-15", days_late:66, note:"Status still says Due"},
+    {number:"PERF-IN-000033", status:"Due", amount_due:7079.98, due_date:"2026-10-09", days_late:11, note:"Status still says Due"},
+    {number:"PERF-IN-000065", status:"Due", amount_due:483.88, due_date:"2026-12-31", days_late:-72, note:""},
+    {number:"PERF-IN-000055", status:"Paid", amount_due:0, due_date:"2026-03-28", days_late:null, note:"Paid $5,243.00"}],
   signals:[
-    {level:"bad",title:"Auto-charge is on, but there is no saved payment method.",detail:"Every automatic charge on this account will fail until one is added."},
-    {level:"bad",title:"Two subscriptions stopped on 12 Oct while $9,078.58 is overdue.",detail:"One cancelled, one suspended. Possible churn."},
-    {level:"warn",title:"An $8,994 subscription is still a Draft.",detail:"Its first bill date (17 Oct) has passed, so it will never bill as it stands."},
-    {level:"info",title:"No contacts and no activity on file.",detail:"Reminders can only go to the billing email."}],
+    {level:"bad", title:"Auto-charge is on, but there is no saved payment method.", detail:"Every automatic charge on this account will fail until one is added."},
+    {level:"bad", title:"Two subscriptions stopped on 12 Oct while $9,078.58 is overdue.", detail:"One cancelled, one suspended. Possible churn."},
+    {level:"warn", title:"An $8,994 subscription is still a Draft.", detail:"Its first bill date (17 Oct) has passed, so it will never bill as it stands."},
+    {level:"info", title:"No contacts and no activity on file.", detail:"Reminders can only go to the billing email."}],
   actions:[
-    {label:"Email 4 overdue invoices",say:"Email Copperfield Logistics' overdue invoices to them",primary:true},
-    {label:"Ask for a payment method",say:"Send Copperfield Logistics a link to add a payment method"},
-    {label:"Review the Draft subscription",say:"Show me the Draft subscription PERF-SF_000097"}],
+    {label:"Email 4 overdue invoices", say:"Email Copperfield Logistics' overdue invoices to them", primary:true},
+    {label:"Ask for a payment method", say:"Send Copperfield Logistics a link to add a payment method"},
+    {label:"Review the Draft subscription", say:"Show me the Draft subscription PERF-SF_000097"}],
   notes:["Sample built from the PERF test account. The customer-360 skill replaces it with live data."]
 };
 const DATA = window.__SF_DATA__ || SAMPLE;

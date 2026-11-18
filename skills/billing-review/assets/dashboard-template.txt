@@ -129,32 +129,32 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15
 const SAMPLE = {
   generated_at:"2026-10-20", account:"Sample tenant", currency:"USD",
   kpis:{outstanding:100200, overdue:60550, overdue_count:8, mrr:45600, mrr_prev:46300, churned_mrr:2100, failed_payments_7d:2, failed_amount_7d:16200},
-  mrr_trend:[{period:"2026-05",mrr:41200},{period:"2026-06",mrr:42900},{period:"2026-07",mrr:44100},{period:"2026-08",mrr:44800},{period:"2026-09",mrr:46300},{period:"2026-10",mrr:45600}],
+  mrr_trend:[{period:"2026-05", mrr:41200}, {period:"2026-06", mrr:42900}, {period:"2026-07", mrr:44100}, {period:"2026-08", mrr:44800}, {period:"2026-09", mrr:46300}, {period:"2026-10", mrr:45600}],
   invoices:[
-    {id:"s1",number:"INV-1988",customer:"Orbit Media Group",status:"Overdue",total:9800,amount_due:9800,invoice_date:"2026-06-15",due_date:"2026-06-30",has_payment_method:true,risk:"critical",action:{type:"review",label:"Review",say:"Show me the history of invoice INV-1988"}},
-    {id:"s2",number:"INV-2041",customer:"Atlas Freight",status:"Overdue",total:18600,amount_due:18600,invoice_date:"2026-07-01",due_date:"2026-07-31",has_payment_method:true,risk:"critical",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2041 to the customer"}},
-    {id:"s3",number:"INV-2077",customer:"Lumen Health Clinics",status:"Overdue",total:12400,amount_due:12400,invoice_date:"2026-08-15",due_date:"2026-09-14",has_payment_method:false,risk:"critical",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2077 to the customer"}},
-    {id:"s4",number:"INV-2093",customer:"Brightline Fitness",status:"Overdue",total:6400,amount_due:6400,invoice_date:"2026-08-29",due_date:"2026-09-28",has_payment_method:true,risk:"overdue",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2093 to the customer"}},
-    {id:"s5",number:"INV-2101",customer:"Harbor Meal Kits",status:"Overdue",total:5500,amount_due:5500,invoice_date:"2026-09-01",due_date:"2026-10-01",has_payment_method:true,risk:"overdue",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2101 to the customer"}},
-    {id:"s6",number:"INV-2108",customer:"Brightline Fitness",status:"Overdue",total:2150,amount_due:2150,invoice_date:"2026-09-05",due_date:"2026-10-05",has_payment_method:true,risk:"overdue",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2108 to the customer"}},
-    {id:"s7",number:"INV-2115",customer:"Kestrel Software",status:"Partially Paid",total:7600,amount_due:3800,invoice_date:"2026-09-10",due_date:"2026-10-10",has_payment_method:true,risk:"overdue",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2115 to the customer"}},
-    {id:"s8",number:"INV-2122",customer:"Pinecrest Schools",status:"Overdue",total:1900,amount_due:1900,invoice_date:"2026-09-14",due_date:"2026-10-14",has_payment_method:false,risk:"overdue",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2122 to the customer"}},
-    {id:"s9",number:"INV-2130",customer:"Northwind Coffee Co",status:"Due",total:4200,amount_due:4200,invoice_date:"2026-09-23",due_date:"2026-10-23",has_payment_method:true,risk:"due_soon",action:null},
-    {id:"s10",number:"INV-2134",customer:"Harbor Meal Kits",status:"Due",total:2750,amount_due:2750,invoice_date:"2026-09-25",due_date:"2026-10-25",has_payment_method:true,risk:"due_soon",action:null},
-    {id:"s11",number:"INV-2139",customer:"Orbit Media Group",status:"Due",total:7200,amount_due:7200,invoice_date:"2026-10-06",due_date:"2026-11-05",has_payment_method:true,risk:"on_track",action:null},
-    {id:"s12",number:"INV-2142",customer:"Atlas Freight",status:"Due",total:15500,amount_due:15500,invoice_date:"2026-10-13",due_date:"2026-11-12",has_payment_method:true,risk:"on_track",action:null},
-    {id:"s13",number:"INV-2145",customer:"Kestrel Software",status:"Due",total:3800,amount_due:3800,invoice_date:"2026-10-19",due_date:"2026-11-18",has_payment_method:true,risk:"on_track",action:null},
-    {id:"s14",number:"INV-2150",customer:"Lumen Health Clinics",status:"Due",total:6200,amount_due:6200,invoice_date:"2026-10-21",due_date:"2026-11-20",has_payment_method:false,risk:"on_track",action:null}
+    {id:"s1", number:"INV-1988", customer:"Orbit Media Group", status:"Overdue", total:9800, amount_due:9800, invoice_date:"2026-06-15", due_date:"2026-06-30", has_payment_method:true, risk:"critical", action:{type:"review", label:"Review", say:"Show me the history of invoice INV-1988"}},
+    {id:"s2", number:"INV-2041", customer:"Atlas Freight", status:"Overdue", total:18600, amount_due:18600, invoice_date:"2026-07-01", due_date:"2026-07-31", has_payment_method:true, risk:"critical", action:{type:"send_invoice", label:"Email invoice", say:"Email invoice INV-2041 to the customer"}},
+    {id:"s3", number:"INV-2077", customer:"Lumen Health Clinics", status:"Overdue", total:12400, amount_due:12400, invoice_date:"2026-08-15", due_date:"2026-09-14", has_payment_method:false, risk:"critical", action:{type:"send_invoice", label:"Email invoice", say:"Email invoice INV-2077 to the customer"}},
+    {id:"s4", number:"INV-2093", customer:"Brightline Fitness", status:"Overdue", total:6400, amount_due:6400, invoice_date:"2026-08-29", due_date:"2026-09-28", has_payment_method:true, risk:"overdue", action:{type:"send_invoice", label:"Email invoice", say:"Email invoice INV-2093 to the customer"}},
+    {id:"s5", number:"INV-2101", customer:"Harbor Meal Kits", status:"Overdue", total:5500, amount_due:5500, invoice_date:"2026-09-01", due_date:"2026-10-01", has_payment_method:true, risk:"overdue", action:{type:"send_invoice", label:"Email invoice", say:"Email invoice INV-2101 to the customer"}},
+    {id:"s6", number:"INV-2108", customer:"Brightline Fitness", status:"Overdue", total:2150, amount_due:2150, invoice_date:"2026-09-05", due_date:"2026-10-05", has_payment_method:true, risk:"overdue", action:{type:"send_invoice", label:"Email invoice", say:"Email invoice INV-2108 to the customer"}},
+    {id:"s7", number:"INV-2115", customer:"Kestrel Software", status:"Partially Paid", total:7600, amount_due:3800, invoice_date:"2026-09-10", due_date:"2026-10-10", has_payment_method:true, risk:"overdue", action:{type:"send_invoice", label:"Email invoice", say:"Email invoice INV-2115 to the customer"}},
+    {id:"s8", number:"INV-2122", customer:"Pinecrest Schools", status:"Overdue", total:1900, amount_due:1900, invoice_date:"2026-09-14", due_date:"2026-10-14", has_payment_method:false, risk:"overdue", action:{type:"send_invoice", label:"Email invoice", say:"Email invoice INV-2122 to the customer"}},
+    {id:"s9", number:"INV-2130", customer:"Northwind Coffee Co", status:"Due", total:4200, amount_due:4200, invoice_date:"2026-09-23", due_date:"2026-10-23", has_payment_method:true, risk:"due_soon", action:null},
+    {id:"s10", number:"INV-2134", customer:"Harbor Meal Kits", status:"Due", total:2750, amount_due:2750, invoice_date:"2026-09-25", due_date:"2026-10-25", has_payment_method:true, risk:"due_soon", action:null},
+    {id:"s11", number:"INV-2139", customer:"Orbit Media Group", status:"Due", total:7200, amount_due:7200, invoice_date:"2026-10-06", due_date:"2026-11-05", has_payment_method:true, risk:"on_track", action:null},
+    {id:"s12", number:"INV-2142", customer:"Atlas Freight", status:"Due", total:15500, amount_due:15500, invoice_date:"2026-10-13", due_date:"2026-11-12", has_payment_method:true, risk:"on_track", action:null},
+    {id:"s13", number:"INV-2145", customer:"Kestrel Software", status:"Due", total:3800, amount_due:3800, invoice_date:"2026-10-19", due_date:"2026-11-18", has_payment_method:true, risk:"on_track", action:null},
+    {id:"s14", number:"INV-2150", customer:"Lumen Health Clinics", status:"Due", total:6200, amount_due:6200, invoice_date:"2026-10-21", due_date:"2026-11-20", has_payment_method:false, risk:"on_track", action:null}
   ],
   failed_payments:[
-    {customer:"Brightline Fitness",amount:6400,date:"2026-10-18",reason:"card_declined",invoice:"INV-2093"},
-    {customer:"Orbit Media Group",amount:9800,date:"2026-10-16",reason:"insufficient_funds",invoice:"INV-1988"}
+    {customer:"Brightline Fitness", amount:6400, date:"2026-10-18", reason:"card_declined", invoice:"INV-2093"},
+    {customer:"Orbit Media Group", amount:9800, date:"2026-10-16", reason:"insufficient_funds", invoice:"INV-1988"}
   ],
   renewals:[
-    {customer:"Northwind Coffee Co",plan:"Growth monthly",amount:1450,renews_on:"2026-10-28"},
-    {customer:"Atlas Freight",plan:"Enterprise annual",amount:62000,renews_on:"2026-11-02"},
-    {customer:"Lumen Health Clinics",plan:"Pro annual",amount:24000,renews_on:"2026-11-09"},
-    {customer:"Pinecrest Schools",plan:"Education annual",amount:9600,renews_on:"2026-11-15"}
+    {customer:"Northwind Coffee Co", plan:"Growth monthly", amount:1450, renews_on:"2026-10-28"},
+    {customer:"Atlas Freight", plan:"Enterprise annual", amount:62000, renews_on:"2026-11-02"},
+    {customer:"Lumen Health Clinics", plan:"Pro annual", amount:24000, renews_on:"2026-11-09"},
+    {customer:"Pinecrest Schools", plan:"Education annual", amount:9600, renews_on:"2026-11-15"}
   ],
   notes:["Sample data for preview. The billing-review skill replaces it with live data from your SubscriptionFlow connector."]
 };

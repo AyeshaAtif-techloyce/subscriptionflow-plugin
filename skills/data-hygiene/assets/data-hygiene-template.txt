@@ -62,9 +62,9 @@ summary:focus-visible,.chip:focus-visible,.btn:focus-visible{outline:2px solid v
 const SAMPLE = {
   generated_at:"2026-10-20", account:"Sample account",
   checks:[
-    {id:"stale_due",title:"Invoices past due still marked \"Due\"",severity:"high",status:"found",count:12,detail:"12 open invoices have a due date in the past but their status was never moved to Overdue. The oldest is 8 months late.",why:"Overdue reminders and dunning key off the status, so these are never chased.",fix:"Check the job that moves invoices to Overdue, then update the status.",examples:[{label:"INV-1042",sub:"Acme Ltd · due 12 Feb 2026 · $4,210.00"}],ask:"List the invoices that are past due but still marked Due"},
-    {id:"cancel_no_reason",title:"Cancellations with no reason recorded",severity:"low",status:"found",count:3,detail:"3 cancelled subscriptions have no cancellation reason.",why:"Churn analysis by reason is impossible.",fix:"Make the reason required and backfill recent ones.",examples:[],ask:"List cancelled subscriptions with no reason"},
-    {id:"no_country",title:"Customers missing a billing country",severity:"low",status:"clear",count:0,detail:"Every customer has a billing country.",why:"",fix:"",examples:[]}],
+    {id:"stale_due", title:"Invoices past due still marked \"Due\"", severity:"high", status:"found", count:12, detail:"12 open invoices have a due date in the past but their status was never moved to Overdue. The oldest is 8 months late.", why:"Overdue reminders and dunning key off the status, so these are never chased.", fix:"Check the job that moves invoices to Overdue, then update the status.", examples:[{label:"INV-1042", sub:"Acme Ltd · due 12 Feb 2026 · $4,210.00"}], ask:"List the invoices that are past due but still marked Due"},
+    {id:"cancel_no_reason", title:"Cancellations with no reason recorded", severity:"low", status:"found", count:3, detail:"3 cancelled subscriptions have no cancellation reason.", why:"Churn analysis by reason is impossible.", fix:"Make the reason required and backfill recent ones.", examples:[], ask:"List cancelled subscriptions with no reason"},
+    {id:"no_country", title:"Customers missing a billing country", severity:"low", status:"clear", count:0, detail:"Every customer has a billing country.", why:"", fix:"", examples:[]}],
   notes:["Sample data for preview. The data-hygiene skill replaces it with live results."]
 };
 const DATA = window.__SF_DATA__ || SAMPLE;
