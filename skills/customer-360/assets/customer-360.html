@@ -1,0 +1,155 @@
+<title>Customer Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: identity + health header, KPI strip, signals, then subscriptions and invoices side by side, then next steps. */
+:root{
+  --bg:#f4f6f7; --surface:#ffffff; --sunk:#edf0f2; --fg:#14202a; --muted:#5a6773; --line:#dce2e6;
+  --accent:#0f6b6b; --accent-soft:#dff0ef;
+  --good:#1d7a4f; --good-soft:#e2f3ea; --warn:#a86500; --warn-soft:#fbf0dc; --bad:#b4372f; --bad-soft:#fbe6e4;
+  --f:"Manrope",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1517; --surface:#162024; --sunk:#1c282d; --fg:#e4ecee; --muted:#97a6ad; --line:#28363c;
+  --accent:#5cc2bd; --accent-soft:#143a3a; --good:#5cc595; --good-soft:#163527; --warn:#e3a54a; --warn-soft:#3a2b12; --bad:#ef8076; --bad-soft:#3d1c1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1517; --surface:#162024; --sunk:#1c282d; --fg:#e4ecee; --muted:#97a6ad; --line:#28363c;
+  --accent:#5cc2bd; --accent-soft:#143a3a; --good:#5cc595; --good-soft:#163527; --warn:#e3a54a; --warn-soft:#3a2b12; --bad:#ef8076; --bad-soft:#3d1c1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f);font-size:15px;line-height:1.5;margin:0}
+.w{max-width:1080px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
+h1{font-size:1.6rem;font-weight:800;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.label{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)} .small{font-size:.85rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:12px;min-width:0;align-content:start}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;justify-content:space-between;align-items:center}
+.health{display:flex;align-items:center;gap:12px}
+.pill{font-size:.73rem;font-weight:700;padding:2px 9px;border-radius:99px;display:inline-block;white-space:nowrap}
+.bad{background:var(--bad-soft);color:var(--bad)} .warn{background:var(--warn-soft);color:var(--warn)} .good{background:var(--good-soft);color:var(--good)} .mute{background:var(--sunk);color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:1px}
+.tile .v{font-weight:800;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.tile.alert{border-color:var(--bad)} .tile.alert .v{color:var(--bad)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+.li{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:.88rem;align-items:center}
+.li .sub{grid-column:1/-1;color:var(--muted);font-size:.78rem}
+.list{display:grid;gap:6px}
+.sig{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:8px 0;border-bottom:1px dashed var(--line);font-size:.9rem}
+.sig:last-child{border-bottom:0}
+.dot{width:9px;height:9px;border-radius:50%;margin-top:7px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-weight:700;font-size:.84rem;border-radius:7px;padding:7px 13px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--surface)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.reasons{font-size:.8rem;color:var(--muted);margin:0;padding-left:18px}
+.num{font-variant-numeric:tabular-nums}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:.88rem;max-width:min(560px,calc(100% - 32px))}
+.badge{font-size:.74rem;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--warn-soft);color:var(--warn)}
+</style>
+
+<div class="w">
+  <div class="card">
+    <div class="head">
+      <div style="display:grid;gap:2px;min-width:0">
+        <span class="label" id="c-meta"></span>
+        <h1 id="c-name"></h1>
+        <span class="muted small" id="c-sub"></span>
+      </div>
+      <div class="health">
+        <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="none" stroke="var(--sunk)" stroke-width="7"/><circle id="ring" cx="32" cy="32" r="27" fill="none" stroke-width="7" stroke-linecap="round" transform="rotate(-90 32 32)"/><text id="ring-t" x="32" y="37" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fg)" font-family="Manrope,sans-serif"></text></svg>
+        <div style="display:grid;gap:2px"><span id="band" class="pill"></span><span class="small muted">Health score</span><span class="badge" id="sample" hidden>Sample data</span></div>
+      </div>
+    </div>
+    <ul class="reasons" id="reasons"></ul>
+  </div>
+  <div class="tiles" id="tiles"></div>
+  <div class="card"><span class="label">What stands out</span><div id="signals"></div></div>
+  <div class="cols">
+    <div class="card"><span class="label">Subscriptions</span><div class="list" id="subs"></div></div>
+    <div class="card"><span class="label">Invoices</span><div class="list" id="invs"></div></div>
+  </div>
+  <div class="card"><span class="label">Suggested next steps</span><div class="btns" id="actions"></div><span class="small muted">Buttons copy a sentence to send in the chat. Anything that changes data shows a preview first.</span></div>
+  <ul class="small muted" id="notes"></ul>
+  <div class="toast" id="toast" role="status" hidden></div>
+</div>
+
+<script>
+const SAMPLE = {
+  generated_at:"2026-10-20",
+  customer:{company:"Copperfield Logistics",name:"PERF Ivan Pearson",number:"PERF-C000003",email:"ivan.pearson.000003@perf.seed",city:"London",country:"GB",terms:"Net30",currency:"USD",since:"2026-03-21",auto_charge:true,portal:true,payment_methods:0},
+  health:{score:20,band:"at_risk",reasons:["-30 invoice over 60 days late","-15 auto-charge on with no saved payment method","-20 two subscriptions stopped in the last 30 days","-10 Draft subscription past its bill date","-5 no contacts on file"]},
+  kpis:{open_balance:9562.46,open_count:5,overdue:9078.58,overdue_count:4,oldest_days:110,active_subs:1,total_subs:4,paid_to_date:5243},
+  subscriptions:[
+    {number:"PERF-SF_000044",name:"Onboarding Services · Basic Quarterly",status:"Active",amount:995,detail:"Next bill 8 Nov 2026 · term ends 8 Apr 2027"},
+    {number:"PERF-SF_000097",name:"Support Package · Basic Quarterly",status:"Draft",amount:8994,detail:"Next bill date 17 Oct 2026 has passed"},
+    {number:"PERF-SF_000075",name:"Data Warehouse · Starter Monthly",status:"Suspended",amount:297,detail:"Suspended 12 Oct 2026"},
+    {number:"PERF-SF_000086",name:"Support Package · Pro Annual",status:"Cancelled",amount:798,detail:"Cancelled 12 Oct 2026, no reason recorded"}],
+  invoices:[
+    {number:"PERF-IN-000014",status:"Due",amount_due:831.6,due_date:"2026-07-02",days_late:110,note:"Status still says Due"},
+    {number:"PERF-IN-000081",status:"Overdue",amount_due:273,due_date:"2026-07-16",days_late:96,note:""},
+    {number:"PERF-IN-000017",status:"Due",amount_due:894,due_date:"2026-08-15",days_late:66,note:"Status still says Due"},
+    {number:"PERF-IN-000033",status:"Due",amount_due:7079.98,due_date:"2026-10-09",days_late:11,note:"Status still says Due"},
+    {number:"PERF-IN-000065",status:"Due",amount_due:483.88,due_date:"2026-12-31",days_late:-72,note:""},
+    {number:"PERF-IN-000055",status:"Paid",amount_due:0,due_date:"2026-03-28",days_late:null,note:"Paid $5,243.00"}],
+  signals:[
+    {level:"bad",title:"Auto-charge is on, but there is no saved payment method.",detail:"Every automatic charge on this account will fail until one is added."},
+    {level:"bad",title:"Two subscriptions stopped on 12 Oct while $9,078.58 is overdue.",detail:"One cancelled, one suspended. Possible churn."},
+    {level:"warn",title:"An $8,994 subscription is still a Draft.",detail:"Its first bill date (17 Oct) has passed, so it will never bill as it stands."},
+    {level:"info",title:"No contacts and no activity on file.",detail:"Reminders can only go to the billing email."}],
+  actions:[
+    {label:"Email 4 overdue invoices",say:"Email Copperfield Logistics' overdue invoices to them",primary:true},
+    {label:"Ask for a payment method",say:"Send Copperfield Logistics a link to add a payment method"},
+    {label:"Review the Draft subscription",say:"Show me the Draft subscription PERF-SF_000097"}],
+  notes:["Sample built from the PERF test account. The customer-360 skill replaces it with live data."]
+};
+const DATA = window.__SF_DATA__ || SAMPLE;
+
+(function(){
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const c = DATA.customer || {}, k = DATA.kpis || {}, h = DATA.health || {};
+  const money = n => n == null ? "Not available" : new Intl.NumberFormat("en-US",{style:"currency",currency:c.currency||"USD"}).format(n);
+  const fmtDate = d => d ? new Date(d.length===10?d+"T00:00:00":d).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : "–";
+  const tone = s => ({active:"good",paid:"good",overdue:"bad",cancelled:"bad",expired:"bad",failed:"bad",due:"warn","partially paid":"warn",suspended:"warn",draft:"warn",pending:"warn",trial:"warn"})[String(s||"").toLowerCase()] || "mute";
+
+  $("#sample").hidden = DATA !== SAMPLE;
+  $("#c-meta").textContent = [c.number, c.since ? "Customer since " + fmtDate(c.since) : null].filter(Boolean).join(" · ");
+  $("#c-name").textContent = c.company || c.name || "Customer";
+  $("#c-sub").textContent = [c.company ? c.name : null, c.email, [c.city, c.country].filter(Boolean).join(", "), c.terms, c.currency, c.portal ? "Customer portal on" : null].filter(Boolean).join(" · ");
+
+  const band = {healthy:["Healthy","good","var(--good)"],watch:["Watch","warn","var(--warn)"],at_risk:["At risk","bad","var(--bad)"]}[h.band] || ["Not scored","mute","var(--muted)"];
+  const score = typeof h.score === "number" ? Math.max(0, Math.min(100, h.score)) : null;
+  const C = 2 * Math.PI * 27;
+  $("#ring").setAttribute("stroke", band[2]);
+  $("#ring").setAttribute("stroke-dasharray", `${score == null ? 0 : C * score / 100} ${C}`);
+  $("#ring-t").textContent = score == null ? "–" : String(score);
+  $("#band").textContent = band[0]; $("#band").className = "pill " + band[1];
+  $("#reasons").innerHTML = (h.reasons || []).map(r => `<li>${esc(r)}</li>`).join("");
+
+  const tiles = [
+    ["Open balance", money(k.open_balance), k.open_count != null ? `${k.open_count} open invoices` : "", false],
+    ["Overdue", money(k.overdue), k.overdue_count ? `${k.overdue_count} invoices, oldest ${k.oldest_days} days` : "Nothing overdue", (k.overdue || 0) > 0],
+    ["Subscriptions", k.total_subs != null ? `${k.active_subs} of ${k.total_subs}` : "Not available", "active", false],
+    ["Paid to date", money(k.paid_to_date), c.payment_methods != null ? `${c.payment_methods} saved payment method${c.payment_methods===1?"":"s"}` : "", false]];
+  $("#tiles").innerHTML = tiles.map(([l,v,s,a]) => `<div class="tile${a?" alert":""}"><span class="label">${l}</span><span class="v">${v}</span><span class="small muted">${esc(s)}</span></div>`).join("");
+
+  const dotc = {bad:"var(--bad)",warn:"var(--warn)",info:"var(--muted)"};
+  $("#signals").innerHTML = (DATA.signals||[]).length ? DATA.signals.map(s => `<div class="sig"><span class="dot" style="background:${dotc[s.level]||dotc.info}"></span><span><strong>${esc(s.title)}</strong> ${esc(s.detail)}</span></div>`).join("") : `<span class="small muted">Nothing unusual on this account.</span>`;
+
+  $("#subs").innerHTML = (DATA.subscriptions||[]).map(s => `<div class="li"><strong>${esc(s.name)}</strong><span class="pill ${tone(s.status)}">${esc(s.status)}</span><span class="sub">${money(s.amount)} · ${esc(s.detail||"")} · ${esc(s.number||"")}</span></div>`).join("") || `<span class="small muted">No subscriptions.</span>`;
+  $("#invs").innerHTML = (DATA.invoices||[]).map(i => {
+    const late = i.days_late == null ? (i.status === "Paid" ? `<span class="pill good">Paid</span>` : "") : i.days_late > 0 ? `<span class="pill ${i.days_late > 60 ? "bad" : "warn"}">${i.days_late} days late</span>` : `<span class="pill mute">Due ${fmtDate(i.due_date)}</span>`;
+    return `<div class="li"><strong>${esc(i.number)}</strong><span class="num">${i.status === "Paid" ? "" : money(i.amount_due)}</span><span class="sub">${late} ${esc(i.note||"")}</span></div>`;
+  }).join("") || `<span class="small muted">No invoices.</span>`;
+
+  const toast = t => { const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 4000); };
+  $("#actions").innerHTML = (DATA.actions||[]).map((a,i) => `<button class="btn${a.primary?"":" ghost"}" data-i="${i}">${esc(a.label)}</button>`).join("");
+  document.querySelectorAll("#actions button").forEach(b => b.onclick = () => {
+    const s = DATA.actions[+b.dataset.i].say;
+    const done = () => toast(`Copied "${s}". Paste it in the chat.`);
+    try { navigator.clipboard.writeText(s).then(done, () => toast(`Say: "${s}"`)); } catch(e) { toast(`Say: "${s}"`); }
+  });
+  $("#notes").innerHTML = (DATA.notes||[]).map(n => `<li>${esc(n)}</li>`).join("");
+})();
+</script>

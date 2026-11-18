@@ -1,0 +1,92 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "subscriptionflow",
+  "version": "1.0.0",
+  "description": "Connect SubscriptionFlow to ChatGPT: look up customers, subscriptions, invoices and revenue reports, create or update billing records with a confirmation step, and run billing reviews, customer reviews, data health checks and guided account setup.",
+  "author": {
+    "name": "SubscriptionFlow Inc.",
+    "url": "https://www.subscriptionflow.com/"
+  },
+  "homepage": "https://www.subscriptionflow.com/",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "SubscriptionFlow",
+        "shortDescription": "Billing, invoices and revenue",
+        "longDescription": "SubscriptionFlow connects ChatGPT to your SubscriptionFlow billing account so you can ask about your customers, subscriptions, invoices, payments and revenue in plain language, and make routine billing updates without leaving the chat.\n\nAsk who is overdue, how MRR is trending, what a plan costs, or what is in a customer's account. Run the account's business reports (MRR, churn, invoice aging, revenue by product) and export records to CSV.\n\nYou can also create customers, contacts, leads, deals, products and plans; create quotes and one-off invoices; email an invoice to a customer; void an unpaid invoice; and archive a customer.\n\nEvery change is shown to you as a preview first and is applied only after you confirm it. Every action is limited by your own SubscriptionFlow permissions and is recorded in your account's activity log.\n\nThe plugin does not charge, refund or retry payments, and card numbers are never shown to the assistant.\n\nSign in with your usual SubscriptionFlow email and password. If your email belongs to more than one account, you choose the one to use.",
+        "developerName": "SubscriptionFlow Inc.",
+        "category": "Business & Operations",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://www.subscriptionflow.com/",
+        "supportURL": "https://www.subscriptionflow.com/contact/",
+        "privacyPolicyURL": "https://www.subscriptionflow.com/privacypolicy/",
+        "termsOfServiceURL": "https://www.subscriptionflow.com/terms-and-conditions/",
+        "defaultPrompt": [
+          "Which invoices are overdue?",
+          "What is our MRR and how has it trended?",
+          "Create a customer called Review Test."
+        ],
+        "brandColor": "#E8590C",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/logo.png"
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Lists overdue invoices from the account.",
+              "prompt": "Which invoices are overdue?",
+              "tools_triggered": "staff_list_records",
+              "expected_behavior": "Returns the unpaid invoices that are past their due date with customer, amount and due date. Nothing is changed."
+            },
+            {
+              "description": "Reports MRR and its trend.",
+              "prompt": "What is our MRR and how has it trended over the last 6 months?",
+              "tools_triggered": "staff_run_report, staff_billing_trend",
+              "expected_behavior": "Returns monthly MRR figures for the last six months. Nothing is changed."
+            },
+            {
+              "description": "Creates a customer with a preview and a confirmation.",
+              "prompt": "Create a customer called Review Test with the email review@example.com.",
+              "tools_triggered": "staff_create_record",
+              "expected_behavior": "Shows a preview of the new customer, creates it only after the user confirms, and returns a link to the record."
+            },
+            {
+              "description": "Creates a one-off invoice with a preview and a confirmation.",
+              "prompt": "Create an invoice for Review Test: 49.00 for onboarding.",
+              "tools_triggered": "staff_search, staff_create_invoice",
+              "expected_behavior": "Finds the customer, shows a preview of the invoice, creates it only after the user confirms, and returns a link to it."
+            },
+            {
+              "description": "Answers a product how-to question from the documentation.",
+              "prompt": "How do I set up tiered pricing?",
+              "tools_triggered": "staff_knowledge_search, staff_knowledge_fetch",
+              "expected_behavior": "Returns the steps from the SubscriptionFlow help article on tiered pricing."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Weather is unrelated to billing.",
+              "prompt": "What is the weather in London tomorrow?"
+            },
+            {
+              "description": "Creative writing is unrelated to billing.",
+              "prompt": "Write a poem about spring."
+            },
+            {
+              "description": "Travel booking is unrelated to billing.",
+              "prompt": "Book me a flight to Paris next week."
+            }
+          ]
+        },
+        "demo_recording_url": "https://youtu.be/W5oQerdlwJE"
+      },
+      "publication": {
+        "release_notes": "Initial release. Look up customers, invoices, subscriptions and revenue reports; create or update customers and other records, quotes and one-off invoices; email or void an invoice; archive a customer. Every change is previewed and confirmed."
+      }
+    }
+  }
+}

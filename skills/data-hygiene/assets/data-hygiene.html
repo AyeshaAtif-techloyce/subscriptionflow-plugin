@@ -1,0 +1,107 @@
+<title>Data Health</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: summary header with severity counts and filter chips, then one expandable row per check. */
+:root{
+  --bg:#f4f6f7; --surface:#ffffff; --sunk:#edf0f2; --fg:#14202a; --muted:#5a6773; --line:#dce2e6;
+  --accent:#0f6b6b; --accent-soft:#dff0ef;
+  --good:#1d7a4f; --good-soft:#e2f3ea; --warn:#a86500; --warn-soft:#fbf0dc; --bad:#b4372f; --bad-soft:#fbe6e4;
+  --f:"Manrope",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1517; --surface:#162024; --sunk:#1c282d; --fg:#e4ecee; --muted:#97a6ad; --line:#28363c;
+  --accent:#5cc2bd; --accent-soft:#143a3a; --good:#5cc595; --good-soft:#163527; --warn:#e3a54a; --warn-soft:#3a2b12; --bad:#ef8076; --bad-soft:#3d1c1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1517; --surface:#162024; --sunk:#1c282d; --fg:#e4ecee; --muted:#97a6ad; --line:#28363c;
+  --accent:#5cc2bd; --accent-soft:#143a3a; --good:#5cc595; --good-soft:#163527; --warn:#e3a54a; --warn-soft:#3a2b12; --bad:#ef8076; --bad-soft:#3d1c1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f);font-size:15px;line-height:1.5;margin:0}
+.w{max-width:960px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:14px}
+h1{font-size:1.6rem;font-weight:800;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.label{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)} .small{font-size:.85rem}
+.head{display:flex;flex-wrap:wrap;gap:10px 20px;justify-content:space-between;align-items:flex-end}
+.pill{font-size:.73rem;font-weight:700;padding:2px 9px;border-radius:99px;display:inline-block;white-space:nowrap}
+.high{background:var(--bad-soft);color:var(--bad)} .medium{background:var(--warn-soft);color:var(--warn)} .low{background:var(--sunk);color:var(--muted)} .clear{background:var(--good-soft);color:var(--good)} .unavailable{background:var(--sunk);color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:.82rem;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:5px 12px;border-radius:99px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+details{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px}
+summary::-webkit-details-marker{display:none}
+summary:focus-visible,.chip:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sev{width:8px;height:38px;border-radius:3px}
+.count{font-weight:800;font-size:1.3rem;font-variant-numeric:tabular-nums;min-width:56px;text-align:right}
+.body{padding:0 14px 14px 34px;display:grid;gap:8px;font-size:.9rem}
+.ex{display:grid;gap:4px}
+.ex div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed var(--line);padding:4px 0;font-size:.85rem}
+.ex div:last-child{border-bottom:0}
+.btn{font:inherit;font-weight:700;font-size:.82rem;border-radius:7px;padding:6px 12px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--surface);justify-self:start}
+.badge{font-size:.74rem;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--warn-soft);color:var(--warn)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:.88rem;max-width:min(560px,calc(100% - 32px))}
+</style>
+
+<div class="w">
+  <div class="head">
+    <div style="display:grid;gap:2px">
+      <span class="label" id="meta"></span>
+      <h1 id="title">Data health</h1>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center" id="sum"></div>
+  </div>
+  <div class="chips" role="group" aria-label="Filter checks">
+    <button class="chip" data-f="found" aria-pressed="true">Problems</button>
+    <button class="chip" data-f="all" aria-pressed="false">All checks</button>
+  </div>
+  <div id="list" style="display:grid;gap:10px"></div>
+  <ul class="small muted" id="notes"></ul>
+  <div class="toast" id="toast" role="status" hidden></div>
+</div>
+
+<script>
+const SAMPLE = {
+  generated_at:"2026-10-20", account:"Sample account",
+  checks:[
+    {id:"stale_due",title:"Invoices past due still marked \"Due\"",severity:"high",status:"found",count:12,detail:"12 open invoices have a due date in the past but their status was never moved to Overdue. The oldest is 8 months late.",why:"Overdue reminders and dunning key off the status, so these are never chased.",fix:"Check the job that moves invoices to Overdue, then update the status.",examples:[{label:"INV-1042",sub:"Acme Ltd · due 12 Feb 2026 · $4,210.00"}],ask:"List the invoices that are past due but still marked Due"},
+    {id:"cancel_no_reason",title:"Cancellations with no reason recorded",severity:"low",status:"found",count:3,detail:"3 cancelled subscriptions have no cancellation reason.",why:"Churn analysis by reason is impossible.",fix:"Make the reason required and backfill recent ones.",examples:[],ask:"List cancelled subscriptions with no reason"},
+    {id:"no_country",title:"Customers missing a billing country",severity:"low",status:"clear",count:0,detail:"Every customer has a billing country.",why:"",fix:"",examples:[]}],
+  notes:["Sample data for preview. The data-hygiene skill replaces it with live results."]
+};
+const DATA = window.__SF_DATA__ || SAMPLE;
+
+(function(){
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const fmtDate = d => d ? new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : "";
+  const checks = DATA.checks || [];
+  const found = checks.filter(c => c.status === "found");
+  const n = sev => found.filter(c => c.severity === sev).length;
+  $("#meta").textContent = `${DATA.account || ""}${DATA.account ? " · " : ""}${fmtDate(DATA.generated_at)} · ${checks.length} checks run`;
+  $("#title").textContent = found.length ? `${found.length} issue${found.length===1?"":"s"} to look at` : "No problems found";
+  $("#sum").innerHTML = [["high","high"],["medium","medium"],["low","low"]].filter(([s]) => n(s)).map(([s,c]) => `<span class="pill ${c}">${n(s)} ${s}</span>`).join("") +
+    (DATA === SAMPLE ? ` <span class="badge">Sample data</span>` : "");
+
+  let filter = found.length ? "found" : "all";
+  const sevColor = {high:"var(--bad)",medium:"var(--warn)",low:"var(--muted)"};
+  function render(){
+    document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", c.dataset.f === filter));
+    const rows = filter === "found" ? found : checks;
+    $("#list").innerHTML = rows.map((c,i) => {
+      const color = c.status === "clear" ? "var(--good)" : c.status === "unavailable" ? "var(--line)" : sevColor[c.severity] || "var(--muted)";
+      const right = c.status === "unavailable" ? `<span class="pill unavailable">Not checked</span>` : c.status === "clear" ? `<span class="pill clear">Clear</span>` : `<span class="count">${(c.count ?? 0).toLocaleString()}</span>`;
+      const ex = (c.examples||[]).length ? `<div class="ex">${c.examples.map(e => `<div><strong>${esc(e.label)}</strong><span class="muted">${esc(e.sub)}</span></div>`).join("")}</div>` : "";
+      return `<details ${i===0 && c.status==="found" ? "open" : ""}><summary><span class="sev" style="background:${color}"></span><span><strong>${esc(c.title)}</strong><br><span class="small muted">${c.status === "found" ? esc(c.severity) + " priority" : c.status === "clear" ? "Nothing found" : esc(c.detail)}</span></span>${right}</summary>
+        <div class="body"><p style="margin:0">${esc(c.detail)}</p>${c.why ? `<p class="small muted" style="margin:0"><strong>Why it matters:</strong> ${esc(c.why)}</p>` : ""}${c.fix ? `<p class="small muted" style="margin:0"><strong>How to fix:</strong> ${esc(c.fix)}</p>` : ""}${ex}${c.ask ? `<button class="btn" data-ask="${esc(c.ask)}">Show me these</button>` : ""}</div></details>`;
+    }).join("") || `<p class="muted">No checks to show.</p>`;
+    document.querySelectorAll("[data-ask]").forEach(b => b.onclick = () => {
+      const s = b.dataset.ask;
+      const t = $("#toast"); const show = m => { t.textContent = m; t.hidden = false; clearTimeout(show.t); show.t = setTimeout(() => t.hidden = true, 4000); };
+      try { navigator.clipboard.writeText(s).then(() => show(`Copied "${s}". Paste it in the chat.`), () => show(`Say: "${s}"`)); } catch(e) { show(`Say: "${s}"`); }
+    });
+  }
+  document.querySelectorAll(".chip").forEach(c => c.onclick = () => { filter = c.dataset.f; render(); });
+  render();
+  $("#notes").innerHTML = (DATA.notes||[]).map(x => `<li>${esc(x)}</li>`).join("");
+})();
+</script>

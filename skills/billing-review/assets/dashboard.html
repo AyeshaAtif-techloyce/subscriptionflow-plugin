@@ -1,0 +1,285 @@
+<title>Billing Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: KPI strip, then aging + MRR side by side, then the action table with failed payments and renewals beside it. */
+:root{
+  --bg:#f4f6f7; --surface:#ffffff; --sunk:#edf0f2; --fg:#14202a; --muted:#5a6773; --line:#dce2e6;
+  --accent:#0f6b6b; --accent-soft:#dff0ef;
+  --good:#1d7a4f; --good-soft:#e2f3ea; --warn:#a86500; --warn-soft:#fbf0dc; --bad:#b4372f; --bad-soft:#fbe6e4;
+  --f-display:"Manrope",system-ui,sans-serif; --f-body:"Manrope",system-ui,sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1517; --surface:#162024; --sunk:#1c282d; --fg:#e4ecee; --muted:#97a6ad; --line:#28363c;
+  --accent:#5cc2bd; --accent-soft:#143a3a;
+  --good:#5cc595; --good-soft:#163527; --warn:#e3a54a; --warn-soft:#3a2b12; --bad:#ef8076; --bad-soft:#3d1c1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1517; --surface:#162024; --sunk:#1c282d; --fg:#e4ecee; --muted:#97a6ad; --line:#28363c;
+  --accent:#5cc2bd; --accent-soft:#143a3a;
+  --good:#5cc595; --good-soft:#163527; --warn:#e3a54a; --warn-soft:#3a2b12; --bad:#ef8076; --bad-soft:#3d1c1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
+.sf{max-width:1160px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+.sf h1{font-family:var(--f-display);font-size:1.6rem;font-weight:800;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sf h2{font-family:var(--f-display);font-size:1rem;font-weight:700;margin:0}
+.sf .label{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sf .head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:flex-end;justify-content:space-between}
+.sf .meta{color:var(--muted);font-size:.88rem}
+.sf .badge{font-size:.74rem;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--warn-soft);color:var(--warn)}
+.sf .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px;min-width:0;align-content:start}
+.sf .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.sf .kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:2px}
+.sf .kpi .v{font-family:var(--f-display);font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums}
+.sf .kpi .s{font-size:.82rem;color:var(--muted)}
+.sf .kpi.alert{border-color:var(--bad)} .sf .kpi.alert .v{color:var(--bad)}
+.sf .up{color:var(--good);font-weight:700} .sf .down{color:var(--bad);font-weight:700}
+.sf .row2{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+.sf .row3{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+@media (max-width:860px){.sf .row2,.sf .row3{grid-template-columns:1fr}}
+.sf .bars{display:grid;gap:6px}
+.sf .bar{display:grid;grid-template-columns:110px 1fr 86px;gap:10px;align-items:center;background:none;border:0;padding:5px 6px;border-radius:6px;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.sf .bar:hover,.sf .bar[aria-pressed="true"]{background:var(--accent-soft)}
+.sf .bar .n{font-size:.85rem} .sf .bar .a{font-size:.82rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.sf .bar .t{height:12px;background:var(--sunk);border-radius:3px;overflow:hidden} .sf .bar .t i{display:block;height:100%;border-radius:3px}
+@media (max-width:480px){.sf .bar{grid-template-columns:84px 1fr 70px}}
+.sf .trend{display:flex;gap:8px;align-items:flex-end;height:140px}
+.sf .tcol{flex:1;display:grid;grid-template-rows:auto 1fr auto;gap:4px;height:100%;text-align:center;min-width:0}
+.sf .tcol .st{display:flex;flex-direction:column;justify-content:flex-end}
+.sf .tcol .st i{display:block;border-radius:3px 3px 0 0;background:var(--accent);opacity:.55}
+.sf .tcol.last .st i{opacity:1}
+.sf .tcol .l{font-size:.74rem;color:var(--muted)} .sf .tcol .x{font-size:.72rem;font-variant-numeric:tabular-nums}
+.sf .chips{display:flex;flex-wrap:wrap;gap:8px}
+.sf .chip{font:inherit;font-size:.82rem;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:5px 12px;border-radius:99px;cursor:pointer}
+.sf .chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.sf .scroll{overflow-x:auto;min-width:0}
+.sf table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.sf th,.sf td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:.87rem;vertical-align:middle}
+.sf th{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.sf .num{text-align:right}
+.sf tbody tr[data-i]{cursor:pointer} .sf tbody tr[data-i]:hover{background:var(--sunk)} .sf tr.sel{background:var(--accent-soft)!important}
+.sf .pill{font-size:.73rem;font-weight:700;padding:2px 8px;border-radius:99px;display:inline-block}
+.sf .critical{background:var(--bad-soft);color:var(--bad)} .sf .overdue{background:var(--warn-soft);color:var(--warn)}
+.sf .due_soon{background:var(--accent-soft);color:var(--accent)} .sf .on_track{background:var(--sunk);color:var(--muted)}
+.sf .btn{font:inherit;font-weight:700;font-size:.8rem;border-radius:6px;padding:5px 11px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--surface)}
+.sf .btn.ghost{background:transparent;color:var(--accent)}
+.sf .btn:focus-visible,.sf .chip:focus-visible,.sf .bar:focus-visible,.sf tr[data-i]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sf .list{display:grid;gap:8px}
+.sf .li{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 10px;background:var(--sunk);border-radius:8px;font-size:.86rem}
+.sf .li .sub{grid-column:1/-1;color:var(--muted);font-size:.78rem}
+.sf .callout{border-left:3px solid var(--bad);background:var(--bad-soft);padding:10px 12px;border-radius:0 8px 8px 0;font-size:.9rem}
+.sf .detail{border:1px solid var(--accent);background:var(--accent-soft);border-radius:8px;padding:14px;display:grid;gap:8px}
+.sf .kv{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-size:.87rem;font-variant-numeric:tabular-nums}
+.sf .kv span:nth-child(odd){color:var(--muted)}
+.sf .say{font-family:var(--f-mono);font-size:.82rem;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 10px;width:100%;color:var(--fg)}
+.sf .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:.88rem;max-width:min(560px,calc(100% - 32px));box-shadow:0 6px 24px rgba(0,0,0,.2)}
+.sf .notes{font-size:.84rem;color:var(--muted)} .sf .notes li{margin:2px 0}
+.sf .empty{color:var(--muted);font-size:.87rem}
+</style>
+
+<div class="sf" id="sf-dash">
+  <div class="head">
+    <div>
+      <span class="label" id="sf-account">Billing review</span>
+      <h1 id="sf-title">Billing review</h1>
+      <div class="meta" id="sf-meta"></div>
+    </div>
+    <span class="badge" id="sf-sample" hidden>Sample data</span>
+  </div>
+
+  <div class="kpis" id="sf-kpis"></div>
+  <div id="sf-atrisk"></div>
+
+  <div class="row2">
+    <div class="card">
+      <span class="label">Outstanding by days past due · click to filter</span>
+      <div class="bars" id="sf-aging"></div>
+    </div>
+    <div class="card">
+      <span class="label" id="sf-trend-label">Monthly recurring revenue</span>
+      <div class="trend" id="sf-trend"></div>
+      <div class="meta" id="sf-churn"></div>
+    </div>
+  </div>
+
+  <div class="row3">
+    <div class="card">
+      <div class="head">
+        <span class="label" id="sf-tlabel">Invoices that need action</span>
+        <div class="chips" role="group" aria-label="Filter invoices">
+          <button class="chip" data-f="action" aria-pressed="true">Needs action</button>
+          <button class="chip" data-f="soon" aria-pressed="false">Due soon</button>
+          <button class="chip" data-f="all" aria-pressed="false">All open</button>
+        </div>
+      </div>
+      <div class="scroll"><table id="sf-table"></table></div>
+      <div id="sf-detail" hidden></div>
+    </div>
+    <div class="card">
+      <span class="label">Failed payments · last 7 days</span>
+      <div class="list" id="sf-failed"></div>
+      <span class="label">Renewals · next 30 days</span>
+      <div class="list" id="sf-renew"></div>
+    </div>
+  </div>
+
+  <ul class="notes" id="sf-notes"></ul>
+  <div class="toast" id="sf-toast" role="status" hidden></div>
+</div>
+
+<script>
+const SAMPLE = {
+  generated_at:"2026-10-20", account:"Sample tenant", currency:"USD",
+  kpis:{outstanding:100200, overdue:60550, overdue_count:8, mrr:45600, mrr_prev:46300, churned_mrr:2100, failed_payments_7d:2, failed_amount_7d:16200},
+  mrr_trend:[{period:"2026-05",mrr:41200},{period:"2026-06",mrr:42900},{period:"2026-07",mrr:44100},{period:"2026-08",mrr:44800},{period:"2026-09",mrr:46300},{period:"2026-10",mrr:45600}],
+  invoices:[
+    {id:"s1",number:"INV-1988",customer:"Orbit Media Group",status:"Overdue",total:9800,amount_due:9800,invoice_date:"2026-06-15",due_date:"2026-06-30",has_payment_method:true,risk:"critical",action:{type:"review",label:"Review",say:"Show me the history of invoice INV-1988"}},
+    {id:"s2",number:"INV-2041",customer:"Atlas Freight",status:"Overdue",total:18600,amount_due:18600,invoice_date:"2026-07-01",due_date:"2026-07-31",has_payment_method:true,risk:"critical",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2041 to the customer"}},
+    {id:"s3",number:"INV-2077",customer:"Lumen Health Clinics",status:"Overdue",total:12400,amount_due:12400,invoice_date:"2026-08-15",due_date:"2026-09-14",has_payment_method:false,risk:"critical",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2077 to the customer"}},
+    {id:"s4",number:"INV-2093",customer:"Brightline Fitness",status:"Overdue",total:6400,amount_due:6400,invoice_date:"2026-08-29",due_date:"2026-09-28",has_payment_method:true,risk:"overdue",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2093 to the customer"}},
+    {id:"s5",number:"INV-2101",customer:"Harbor Meal Kits",status:"Overdue",total:5500,amount_due:5500,invoice_date:"2026-09-01",due_date:"2026-10-01",has_payment_method:true,risk:"overdue",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2101 to the customer"}},
+    {id:"s6",number:"INV-2108",customer:"Brightline Fitness",status:"Overdue",total:2150,amount_due:2150,invoice_date:"2026-09-05",due_date:"2026-10-05",has_payment_method:true,risk:"overdue",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2108 to the customer"}},
+    {id:"s7",number:"INV-2115",customer:"Kestrel Software",status:"Partially Paid",total:7600,amount_due:3800,invoice_date:"2026-09-10",due_date:"2026-10-10",has_payment_method:true,risk:"overdue",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2115 to the customer"}},
+    {id:"s8",number:"INV-2122",customer:"Pinecrest Schools",status:"Overdue",total:1900,amount_due:1900,invoice_date:"2026-09-14",due_date:"2026-10-14",has_payment_method:false,risk:"overdue",action:{type:"send_invoice",label:"Email invoice",say:"Email invoice INV-2122 to the customer"}},
+    {id:"s9",number:"INV-2130",customer:"Northwind Coffee Co",status:"Due",total:4200,amount_due:4200,invoice_date:"2026-09-23",due_date:"2026-10-23",has_payment_method:true,risk:"due_soon",action:null},
+    {id:"s10",number:"INV-2134",customer:"Harbor Meal Kits",status:"Due",total:2750,amount_due:2750,invoice_date:"2026-09-25",due_date:"2026-10-25",has_payment_method:true,risk:"due_soon",action:null},
+    {id:"s11",number:"INV-2139",customer:"Orbit Media Group",status:"Due",total:7200,amount_due:7200,invoice_date:"2026-10-06",due_date:"2026-11-05",has_payment_method:true,risk:"on_track",action:null},
+    {id:"s12",number:"INV-2142",customer:"Atlas Freight",status:"Due",total:15500,amount_due:15500,invoice_date:"2026-10-13",due_date:"2026-11-12",has_payment_method:true,risk:"on_track",action:null},
+    {id:"s13",number:"INV-2145",customer:"Kestrel Software",status:"Due",total:3800,amount_due:3800,invoice_date:"2026-10-19",due_date:"2026-11-18",has_payment_method:true,risk:"on_track",action:null},
+    {id:"s14",number:"INV-2150",customer:"Lumen Health Clinics",status:"Due",total:6200,amount_due:6200,invoice_date:"2026-10-21",due_date:"2026-11-20",has_payment_method:false,risk:"on_track",action:null}
+  ],
+  failed_payments:[
+    {customer:"Brightline Fitness",amount:6400,date:"2026-10-18",reason:"card_declined",invoice:"INV-2093"},
+    {customer:"Orbit Media Group",amount:9800,date:"2026-10-16",reason:"insufficient_funds",invoice:"INV-1988"}
+  ],
+  renewals:[
+    {customer:"Northwind Coffee Co",plan:"Growth monthly",amount:1450,renews_on:"2026-10-28"},
+    {customer:"Atlas Freight",plan:"Enterprise annual",amount:62000,renews_on:"2026-11-02"},
+    {customer:"Lumen Health Clinics",plan:"Pro annual",amount:24000,renews_on:"2026-11-09"},
+    {customer:"Pinecrest Schools",plan:"Education annual",amount:9600,renews_on:"2026-11-15"}
+  ],
+  notes:["Sample data for preview. The billing-review skill replaces it with live data from your SubscriptionFlow connector."]
+};
+const DATA = window.__SF_DATA__ || SAMPLE;
+
+(function(){
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const cur = DATA.currency || "USD";
+  const money = n => n == null ? "Not available" : new Intl.NumberFormat("en-US",{style:"currency",currency:cur,maximumFractionDigits:Math.abs(n)>=1000?0:2}).format(n);
+  const short = n => n == null ? "–" : Math.abs(n)>=1000 ? new Intl.NumberFormat("en-US",{style:"currency",currency:cur,notation:"compact",maximumFractionDigits:1}).format(n) : money(n);
+  const today = DATA.generated_at;
+  const daysPast = d => Math.round((new Date(today+"T00:00:00") - new Date(d+"T00:00:00"))/864e5);
+  const fmtDate = d => d ? new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : "–";
+  const RISK = {critical:"Critical",overdue:"Overdue",due_soon:"Due soon",on_track:"On track"};
+  const inv = (DATA.invoices||[]).map(x => ({...x, dpd: daysPast(x.due_date)}));
+  const k = DATA.kpis || {};
+
+  $("#sf-title").textContent = "Billing review – " + fmtDate(today);
+  $("#sf-account").textContent = DATA.account || "Billing review";
+  $("#sf-meta").textContent = `${inv.length} open invoices · amounts in ${cur}`;
+  $("#sf-sample").hidden = DATA !== SAMPLE;
+
+  // KPIs
+  const mrrDelta = (k.mrr != null && k.mrr_prev) ? (k.mrr - k.mrr_prev) / k.mrr_prev * 100 : null;
+  const tiles = [
+    ["Outstanding", money(k.outstanding), `${inv.length} open invoices`, false],
+    ["Overdue", money(k.overdue), k.overdue_count != null ? `${k.overdue_count} invoices past due` : "Not available", true],
+    (k.mrr == null && k.revenue_month != null)
+      ? ["Invoiced this month", money(k.revenue_month), "MRR not available", false]
+      : ["MRR", money(k.mrr), mrrDelta == null ? "No prior month" : `<span class="${mrrDelta>=0?"up":"down"}">${mrrDelta>=0?"▲":"▼"} ${Math.abs(mrrDelta).toFixed(1)}%</span> vs last month`, false],
+    ["Failed payments · 7 days", k.failed_payments_7d == null ? "Not available" : String(k.failed_payments_7d), k.failed_amount_7d == null ? "" : money(k.failed_amount_7d) + " not collected", (k.failed_payments_7d||0) > 0],
+  ];
+  $("#sf-kpis").innerHTML = tiles.map(([l,v,s,a]) => `<div class="kpi${a?" alert":""}"><span class="label">${l}</span><span class="v">${v}</span><span class="s">${s}</span></div>`).join("");
+
+  // At-risk customers (2+ overdue invoices)
+  const byCust = {};
+  inv.filter(x => x.dpd > 0).forEach(x => { (byCust[x.customer] = byCust[x.customer] || []).push(x); });
+  const atRisk = Object.entries(byCust).filter(([,v]) => v.length >= 2);
+  if (atRisk.length) $("#sf-atrisk").innerHTML = `<div class="callout"><strong>At-risk customers:</strong> ${atRisk.map(([c,v]) => `${esc(c)} (${v.length} overdue, ${money(v.reduce((s,x)=>s+x.amount_due,0))})`).join("; ")}.</div>`;
+
+  // Aging buckets by days past due
+  const BUCKETS = [["Not yet due",-1e9,0,"--accent"],["1–30 days",1,30,"--warn"],["31–60 days",31,60,"--warn"],["61–90 days",61,90,"--bad"],["90+ days",91,1e9,"--bad"]];
+  let bucket = null, mode = "action", sel = null;
+  function renderAging(){
+    const sums = BUCKETS.map(([n,a,b]) => inv.filter(x => x.dpd >= a && x.dpd <= b).reduce((s,x)=>s+x.amount_due,0));
+    const max = Math.max(1, ...sums);
+    $("#sf-aging").innerHTML = BUCKETS.map(([n,,,c],i) => `<button class="bar" data-b="${i}" aria-pressed="${bucket===i}"><span class="n">${n}</span><span class="t"><i style="width:${sums[i]/max*100}%;background:var(${c})"></i></span><span class="a">${short(sums[i])}</span></button>`).join("");
+    document.querySelectorAll("#sf-aging .bar").forEach(b => b.onclick = () => { const i = +b.dataset.b; bucket = bucket === i ? null : i; if (bucket !== null) setMode("all", false); render(); });
+  }
+
+  // MRR trend
+  (function(){
+    if (DATA.trend_label) $("#sf-trend-label").textContent = DATA.trend_label;
+    const t = DATA.mrr_trend || [];
+    if (!t.length){ $("#sf-trend").innerHTML = `<div class="empty">Not available</div>`; return; }
+    const vals = t.map(x=>x.mrr||0), max = Math.max(...vals), min = Math.min(...vals) * .9;
+    $("#sf-trend").innerHTML = t.map((x,i) => {
+      const h = max > min ? ((x.mrr - min) / (max - min)) * 90 + 10 : 50;
+      const lab = new Date(x.period+"-01T00:00:00").toLocaleDateString("en-US",{month:"short"});
+      return `<div class="tcol${i===t.length-1?" last":""}"><span class="x">${short(x.mrr)}</span><div class="st"><i style="height:${h}px"></i></div><span class="l">${lab}</span></div>`;
+    }).join("");
+    $("#sf-churn").textContent = k.churned_mrr != null ? `Churned this month: ${money(k.churned_mrr)}` : "";
+  })();
+
+  // Table
+  function setMode(m, re = true){ mode = m; document.querySelectorAll(".sf .chip").forEach(c => c.setAttribute("aria-pressed", c.dataset.f === m)); if (m !== "all") bucket = null; if (re) render(); }
+  document.querySelectorAll(".sf .chip").forEach(c => c.onclick = () => setMode(c.dataset.f));
+
+  function rows(){
+    let r = mode === "action" ? inv.filter(x => x.risk === "critical" || x.risk === "overdue")
+          : mode === "soon" ? inv.filter(x => x.risk === "due_soon") : inv.slice();
+    if (bucket !== null){ const [,a,b] = BUCKETS[bucket]; r = r.filter(x => x.dpd >= a && x.dpd <= b); }
+    return r.sort((a,b) => b.dpd - a.dpd);
+  }
+  function renderTable(){
+    const r = rows();
+    $("#sf-tlabel").textContent = bucket !== null ? `Invoices ${BUCKETS[bucket][0].toLowerCase()}` : mode === "action" ? "Invoices that need action" : mode === "soon" ? "Due in the next 7 days" : "All open invoices";
+    let h = `<thead><tr><th>Customer</th><th>Invoice</th><th class="num">Amount due</th><th>Due</th><th>Status</th><th>Next step</th></tr></thead><tbody>`;
+    r.forEach(x => {
+      const i = inv.indexOf(x);
+      const due = x.dpd > 0 ? `${x.dpd} days late` : x.dpd === 0 ? "Due today" : `in ${-x.dpd} days`;
+      const act = x.action ? `<button class="btn${x.action.type==="review"?" ghost":""}" data-say="${esc(x.action.say)}">${esc(x.action.label)}</button>` : `<span class="empty">–</span>`;
+      h += `<tr data-i="${i}" tabindex="0" class="${sel===i?"sel":""}"><td><strong>${esc(x.customer)}</strong></td><td>${esc(x.number)}</td><td class="num">${money(x.amount_due)}</td><td>${due}</td><td><span class="pill ${esc(x.risk)}">${RISK[x.risk]||esc(x.risk)}</span></td><td>${act}</td></tr>`;
+    });
+    if (!r.length) h += `<tr><td colspan="6" class="empty">Nothing here. No invoices match this filter.</td></tr>`;
+    $("#sf-table").innerHTML = h + "</tbody>";
+    document.querySelectorAll("#sf-table tr[data-i]").forEach(tr => {
+      const open = () => { sel = +tr.dataset.i; render(); };
+      tr.onclick = e => { if (!e.target.closest("button")) open(); };
+      tr.onkeydown = e => { if (e.key === "Enter") open(); };
+    });
+    document.querySelectorAll("#sf-table button[data-say]").forEach(b => b.onclick = () => copySay(b.dataset.say));
+  }
+  function renderDetail(){
+    const box = $("#sf-detail");
+    if (sel === null){ box.hidden = true; return; }
+    const x = inv[sel]; box.hidden = false;
+    const fail = (DATA.failed_payments||[]).find(f => f.invoice === x.number);
+    box.innerHTML = `<div class="detail"><span class="label">${esc(x.number)} · ${esc(x.customer)}</span>
+      <div class="kv"><span>Status</span><span>${esc(x.status)}</span><span>Invoice total</span><span>${money(x.total)}</span><span>Amount due</span><span>${money(x.amount_due)}</span>
+      <span>Invoice date</span><span>${fmtDate(x.invoice_date)}</span><span>Due date</span><span>${fmtDate(x.due_date)}</span>
+      <span>Saved payment method</span><span>${x.has_payment_method ? "Yes" : "No"}</span>${fail ? `<span>Last charge</span><span>Failed ${fmtDate(fail.date)} (${esc(fail.reason.replace(/_/g," "))})</span>` : ""}</div>
+      ${x.action ? `<div>To ${x.action.type==="send_invoice"?"email this invoice to the customer":"look into this invoice"}, say this in the chat. Claude shows a preview first and changes nothing until you confirm.</div>
+      <input class="say" readonly value="${esc(x.action.say)}" id="sf-say" aria-label="Sentence to send"><div><button class="btn" id="sf-copy">Copy sentence</button> <button class="btn ghost" id="sf-close">Close</button></div>`
+      : `<div>No action needed yet.</div><div><button class="btn ghost" id="sf-close">Close</button></div>`}</div>`;
+    $("#sf-close").onclick = () => { sel = null; render(); };
+    if (x.action) $("#sf-copy").onclick = () => copySay(x.action.say);
+  }
+  function toast(t){ const el = $("#sf-toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 4200); }
+  function copySay(s){
+    const done = () => toast(`Copied "${s}". Paste it in the chat; Claude will preview before anything changes.`);
+    try { navigator.clipboard.writeText(s).then(done, () => { fallback(s); }); } catch(e){ fallback(s); }
+    function fallback(s){ const i = document.createElement("input"); i.value = s; document.body.appendChild(i); i.select(); try { document.execCommand("copy"); done(); } catch(_) { toast(`Say: "${s}"`); } i.remove(); }
+  }
+
+  // Side lists
+  const fp = DATA.failed_payments || [];
+  $("#sf-failed").innerHTML = fp.length ? fp.map(f => `<div class="li"><strong>${esc(f.customer)}</strong><span>${money(f.amount)}</span><span class="sub">${fmtDate(f.date)} · ${esc((f.reason||"").replace(/_/g," "))}${f.invoice?` · ${esc(f.invoice)}`:""}</span></div>`).join("") : `<div class="empty">No failed payments.</div>`;
+  const rn = (DATA.renewals || []).slice().sort((a,b) => a.renews_on < b.renews_on ? -1 : 1);
+  $("#sf-renew").innerHTML = rn.length ? rn.map(r => `<div class="li"><strong>${esc(r.customer)}</strong><span>${money(r.amount)}</span><span class="sub">${esc(r.plan)} · renews ${fmtDate(r.renews_on)}</span></div>`).join("") : `<div class="empty">No renewals in the next 30 days.</div>`;
+  $("#sf-notes").innerHTML = (DATA.notes||[]).map(n => `<li>${esc(n)}</li>`).join("");
+
+  function render(){ renderAging(); renderTable(); renderDetail(); }
+  render();
+})();
+</script>

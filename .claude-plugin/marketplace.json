@@ -1,0 +1,16 @@
+{
+  "name": "subscriptionflow",
+  "description": "Official SubscriptionFlow plugins for Claude.",
+  "owner": {
+    "name": "SubscriptionFlow",
+    "url": "https://www.subscriptionflow.com"
+  },
+  "plugins": [
+    {
+      "name": "subscriptionflow",
+      "source": "./",
+      "description": "Connect SubscriptionFlow to Claude: billing review, customer 360, data health check and guided account setup, on top of the SubscriptionFlow connector.",
+      "version": "1.0.0"
+    }
+  ]
+}
