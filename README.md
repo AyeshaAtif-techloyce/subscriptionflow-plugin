@@ -9,7 +9,7 @@ Skills add no new permissions. Everything goes through the connector, which sign
 Add this repository as a marketplace, then install the plugin:
 
 ```
-/plugin marketplace add <owner>/<repo>
+/plugin marketplace add AyeshaAtif-techloyce/subscriptionflow-plugin
 /plugin install subscriptionflow@subscriptionflow
 ```
 
